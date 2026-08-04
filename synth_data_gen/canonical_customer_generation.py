@@ -23,6 +23,8 @@ SNAPSHOT_DATE = pd.Timestamp("2025-12-31")
 
 # Customers may have first interacted with the company before the 12-month operational activity period.
 EARLIEST_REGISTRATION_DATE = pd.Timestamp("2018-01-01")
+
+# Output path
 OUTPUT_PATH = Path("data/canonical/canonical_customers.csv")
 
 ################################################################################
