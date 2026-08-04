@@ -1,0 +1,29 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# VS Code local configuration
+.vscode/
+
+# Jupyter temporary files
+.ipynb_checkpoints/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Temporary outputs
+*.log
+
+# Generated datasets
+data/canonical/*.csv
+data/raw/*.csv
+
+# Retain empty data folders
+!data/canonical/.gitkeep
+!data/raw/.gitkeep
