@@ -1,6 +1,6 @@
-################################################################################
+###############################################################################
 # Imports
-################################################################################
+###############################################################################
 from pathlib import Path
 import re
 import unicodedata
@@ -9,29 +9,31 @@ import numpy as np
 import pandas as pd
 from faker import Faker
 
-################################################################################
+###############################################################################
 # 1. Generation configuration
-################################################################################
+###############################################################################
 
 # Seed ensures reproduceability
 SEED = 42
 NUMBER_OF_CUSTOMERS = 10_000
 
-# The date on which the synthetic dataset is assumed to 
+# The date on which the synthetic dataset is assumed to
 # have been extracted.
 SNAPSHOT_DATE = pd.Timestamp("2025-12-31")
 
-# Customers may have first interacted with the company before the 12-month operational activity period.
+# Customers may have first interacted with the company before the 12-month
+# operational activity period.
 EARLIEST_REGISTRATION_DATE = pd.Timestamp("2018-01-01")
 
 # Output path
 OUTPUT_PATH = Path("data/canonical/canonical_customers.csv")
 
-################################################################################
+###############################################################################
 # 2. Assumptions
-################################################################################
+###############################################################################
 
-# Attendance based customer segments - describe customer relationships with the events organisation
+# Attendance based customer segments - describe customer relationships with the
+# events organisation
 CUSTOMER_SEGMENTS = [
     "New",
     "Occasional",
@@ -61,7 +63,9 @@ EMAIL_DOMAINS = [
     "orange.fr",
 ]
 
-# Assumption - assigned email weighting - based on most popular email domains by number of live emails (2016) available at: 
+# Assumption - assigned email weighting
+# based on most popular email domains
+# by number of live emails (2016) available at:
 # https://email-verify.my-addr.com/list-of-most-popular-email-domains.php
 EMAIL_DOMAIN_PROBABILITIES = [
     0.295077,  # gmail.com
@@ -79,8 +83,9 @@ EMAIL_DOMAIN_PROBABILITIES = [
 # Assumption - all customers will be aged between 18-85
 AGES = list(range(18, 86))
 
-# Assumption - customer age weighting - based on Enland and Wales census data (2021) 
-# available at: https://www.ons.gov.uk/census/maps/choropleth/population/age/resident-age-3a/aged-15-years-and-under
+# Assumption - customer age weighting
+# based on Enland and Wales census data (2021) available at:
+# https://www.ons.gov.uk/census/maps/choropleth/population/age/resident-age-3a/aged-15-years-and-under
 AGE_PROBABILITIES = [
     0.014518787,  # 18
     0.014950781,  # 19
@@ -174,8 +179,10 @@ REGIONS = [
     "Northern Ireland",
 ]
 
-# Assumption - Customer postcode distribution to be based on UK population distribution by region (2024) 
-# available at: https://www.statista.com/statistics/294729/uk-population-by-region/?srsltid=AfmBOoq_fXuEgGBrRR3_ILynAo2tt5iie2zB2xweS-CrIJXNxntqNw9k
+# Assumption - Customer postcode distribution
+# based on UK population distribution by region (2024)
+# available at:
+# https://www.statista.com/statistics/294729/uk-population-by-region/?srsltid=AfmBOoq_fXuEgGBrRR3_ILynAo2tt5iie2zB2xweS-CrIJXNxntqNw9k
 REGION_PROBABILITIES = [
     0.1392,  # South East
     0.1312,  # London
@@ -295,23 +302,25 @@ REGION_POSTCODE_DISTRICTS = {
     ],
 }
 
-############################################################
-# 3. initialise generators
-############################################################
+###############################################################################
+# 3. Initialise generators
+###############################################################################
 
 # UK localised Faker generator: "en_GB"
 fake = Faker("en_GB")
 
-#assign consistent seed to both Faker and Numpy generators - enable reproducible generation process
+# assign consistent seed to both Faker and Numpy generators - enable
+# reproducible generation process
 Faker.seed(SEED)
 rng = np.random.default_rng(SEED)
 
 
-############################################################
-# 4. helper functions
-############################################################
+###############################################################################
+# 4. Helper functions
+###############################################################################
 
-# Normalise names to build a lowercase strings suitable for use within synthetic email address
+# Normalise names to build a lowercase strings suitable for use within
+# synthetic email address
 def normalise_for_email(value: str) -> str:
     value = unicodedata.normalize("NFKD", value)
     value = value.encode("ascii", "ignore").decode("ascii")
@@ -321,6 +330,7 @@ def normalise_for_email(value: str) -> str:
     value = re.sub(r"[^a-z0-9]", "", value)
 
     return value
+
 
 # Generate plausible and unique personal email address using normailsed names.
 def generate_unique_email(
@@ -354,7 +364,9 @@ def generate_unique_email(
 
     return email
 
-# Generate unique UK-style mobile number - stored as consistent international format
+
+# Generate unique UK-style mobile number - stored as consistent international
+# format
 def generate_unique_phone(used_phones: set[str]) -> str:
     while True:
         subscriber_number = rng.integers(0, 1_000_000_000)
@@ -366,7 +378,9 @@ def generate_unique_phone(used_phones: set[str]) -> str:
             used_phones.add(phone)
             return phone
 
-# Select random date between two boundaries - gives every date within period approximately equal probability
+
+# Select random date between two boundaries - gives every date within period
+# approximately equal probability
 def generate_random_date(
     start_date: pd.Timestamp,
     end_date: pd.Timestamp,
@@ -381,13 +395,14 @@ def generate_random_date(
 
     return start_date + pd.Timedelta(days=int(random_days))
 
-# Generate date on which customer first interacted with fictional events company.
+
+# Generate date on which customer first interacted with fictional events
+# company.
 def generate_registration_date(
     date_of_birth: pd.Timestamp,
     customer_segment: str,
-) -> pd.Timestamp:
-    
     # Calculate customers 18th birthday
+) -> pd.Timestamp:
     eighteenth_birthday = date_of_birth + pd.DateOffset(years=18)
 
     # New customers registered during most recent 12-month period
@@ -404,6 +419,7 @@ def generate_registration_date(
         start_date=earliest_date,
         end_date=SNAPSHOT_DATE,
     )
+
 
 # Generate date of birth using weighted England and Wales age distribution
 def generate_date_of_birth() -> pd.Timestamp:
@@ -435,6 +451,7 @@ def generate_date_of_birth() -> pd.Timestamp:
         end_date=latest_birth_date,
     )
 
+
 # Generate a synthetic postcode inward code
 def generate_postcode_suffix() -> str:
     digit = int(rng.integers(0, 10))
@@ -443,7 +460,9 @@ def generate_postcode_suffix() -> str:
 
     return f"{digit}{first_letter}{second_letter}"
 
-#Select a UK region using population-based weights to generate a representative city, address and postcode.
+
+# Select a UK region using population-based weights to generate a
+# representative city, address and postcode.
 def generate_customer_location() -> tuple[str, str, str]:
     region = str(
         rng.choice(
@@ -473,11 +492,12 @@ def generate_customer_location() -> tuple[str, str, str]:
 
     return region, address, postcode
 
-############################################################
-# 5. generate clean canonical customer population
-############################################################
 
-# Generate canonical dataset to act as hidden source of truth 
+###############################################################################
+# 5. Generate clean canonical customer population
+###############################################################################
+
+# Generate canonical dataset to act as hidden source of truth
 def generate_canonical_customers(
     number_of_customers: int,
 ) -> pd.DataFrame:
@@ -549,9 +569,9 @@ def generate_canonical_customers(
     return pd.DataFrame(customer_records)
 
 
-############################################################
-# 5. validate and visualise
-############################################################
+###############################################################################
+# 5. Validate and visualise
+###############################################################################
 
 # Check that generated dataset meets basic requirements
 def validate_canonical_customers(
@@ -691,9 +711,9 @@ def validate_canonical_customers(
     )
 
 
-############################################################
+###############################################################################
 # 6. Main funnction
-############################################################
+###############################################################################
 
 def main() -> None:
     # Generate

@@ -1,0 +1,36 @@
+metric,value
+MAIN VALIDATION METRICS,
+total_crm_records,8000
+unique_customers,7800
+duplicate_records,200
+portal_customers,4290
+portal_customer_rate,0.55
+missing_email_rate,0.0271
+missing_phone_rate,0.0999
+missing_address_rate,0.0376
+missing_postcode_rate,0.0292
+,
+CRM CUSTOMER COVERAGE BY SEGMENT,
+coverage_new,65.81%
+coverage_occasional,76.64%
+coverage_regular,83.49%
+coverage_vip,90.26%
+,
+MISSING VALUE PERCENTAGES,
+missing_portal_user_id,45.01%
+missing_email,2.71%
+missing_telephone_number,9.99%
+missing_address,3.76%
+missing_postcode,2.92%
+,
+INTRODUCED DATA QUALITY ISSUES,
+dq_phone_format_variation,1393
+dq_missing_phone,799
+dq_postcode_format_variation,783
+dq_email_case_variation,477
+dq_outdated_address,400
+dq_missing_address,301
+dq_missing_postcode,234
+dq_abbreviated_first_name,233
+dq_missing_email,217
+dq_name_typo,136
