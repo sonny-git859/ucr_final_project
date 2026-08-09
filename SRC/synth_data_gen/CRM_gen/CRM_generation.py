@@ -944,6 +944,10 @@ def validate_crm_records(
     canonical: pd.DataFrame,
 ) -> pd.DataFrame:
 
+    ###########################################################################
+    # Basic validation
+    ###########################################################################
+
     # Confirm expected population sizes
     assert len(
         crm_records
@@ -1471,6 +1475,9 @@ def export_crm_outputs(
     # Portal account mapping
     ###########################################################################
 
+    # Mapping GTID to portal user_ID for later use in E-commerce
+    # and online session logs ensuring consistent relationships
+    # across CRM records and online logs
     portal_mapping = (
         crm_records[
             [

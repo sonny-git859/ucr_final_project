@@ -1,0 +1,53 @@
+metric,value
+MAIN VALIDATION METRICS,
+total_transactions,13302
+unique_purchasers,8000
+total_tickets_sold,20082
+standing_tickets_sold,0
+seated_tickets_sold,0
+tickets_purchased_after_event_date,15006
+tickets_purchased_outside_snapshot,5076
+guest_transaction_rate,0.6422
+registered_transaction_rate,0.3578
+total_ticket_revenue,937538.48
+event_ticket_type_reconciliation,True
+,
+ECOMMERCE CUSTOMER COVERAGE BY SEGMENT,
+coverage_new,71.10%
+coverage_occasional,77.49%
+coverage_regular,85.90%
+coverage_vip,89.74%
+,
+GUEST TRANSACTION RATE BY SEGMENT,
+guest_rate_new,79.72%
+guest_rate_occasional,68.03%
+guest_rate_regular,59.02%
+guest_rate_vip,51.80%
+,
+TICKET TYPE BEHAVIOUR BY AGE,
+age_60_plus_seated_tickets,2653
+age_60_plus_standing_tickets,2833
+age_60_plus_total_tickets,5486
+age_60_plus_seated_percentage,48.36%
+age_under_60_seated_tickets,2423
+age_under_60_standing_tickets,12173
+age_under_60_total_tickets,14596
+age_under_60_seated_percentage,16.60%
+,
+MISSING VALUE PERCENTAGES,
+missing_portal_user_id,64.22%
+missing_email,2.84%
+missing_telephone_number,9.27%
+missing_billing_address,0.00%
+missing_billing_postcode,0.00%
+,
+INTRODUCED DATA QUALITY ISSUES,
+dq_postcode_format_variation,1318
+dq_missing_phone,1233
+dq_alternative_email,1164
+dq_cardholder_name_variation,1077
+dq_historical_billing_address,772
+dq_name_typo,395
+dq_missing_email,378
+dq_incorrect_phone,363
+dq_email_typo,278
