@@ -1,0 +1,27 @@
+metric,value
+RECORD COUNTS,
+crm_records,8000
+ecommerce_records,13302
+marketing_records,12000
+online_records,40000
+support_records,5000
+total_input_records,78302
+consolidated_records,78302
+,
+SCHEMA COUNTS,
+required_common_columns,25
+unique_silver_columns,71
+consolidated_columns,72
+,
+VALIDATION RESULTS,
+all_source_files_read,True
+common_schema_complete,True
+source_metadata_valid,True
+record_count_preserved,True
+source_record_counts_preserved,True
+source_record_references_unique,True
+staging_record_ids_complete,True
+staging_record_ids_unique,True
+complete_union_schema_preserved,True
+all_silver_values_preserved,True
+ground_truth_id_excluded,True

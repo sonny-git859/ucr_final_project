@@ -236,6 +236,27 @@ def validate_source_metadata(
         )
 
 
+def validate_source_columns_preserved(
+    source_dataframe: pd.DataFrame,
+    standardised_dataframe: pd.DataFrame,
+    filename: str,
+) -> None:
+    # Confirm that standardisation preserves every Bronze source column.
+
+    missing_columns = [
+        column
+        for column in source_dataframe.columns
+        if column not in standardised_dataframe.columns
+    ]
+
+    if missing_columns:
+        missing_values = ", ".join(missing_columns)
+        raise ValueError(
+            f"{filename} lost source columns during standardisation: "
+            f"{missing_values}."
+        )
+
+
 ###############################################################################
 # 3. Normalisation functions
 ###############################################################################
@@ -528,6 +549,16 @@ def standardise_source(
     standardised_dataframe = add_identity_columns(
         standardised_dataframe,
         source_config["identity_columns"],
+    )
+
+    standardised_dataframe = order_standardised_columns(
+        standardised_dataframe
+    )
+
+    validate_source_columns_preserved(
+        dataframe,
+        standardised_dataframe,
+        filename,
     )
 
     return order_standardised_columns(standardised_dataframe)
