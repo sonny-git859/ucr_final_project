@@ -1,0 +1,33 @@
+metric,value
+RECORD COUNTS,
+canonical_records,10000
+events_records,52
+crm_records,8000
+e_commerce_records,13302
+online_records,40000
+support_records,5000
+marketing_records,12000
+,
+UNIQUE SOURCE IDENTIFIERS,
+canonical_source_ids_unique,True
+events_source_ids_unique,True
+crm_source_ids_unique,True
+e_commerce_source_ids_unique,True
+online_source_ids_unique,True
+support_source_ids_unique,True
+marketing_source_ids_unique,True
+,
+GROUND TRUTH MAPPING COMPLETENESS,
+crm_mapping_complete,True
+e_commerce_mapping_complete,True
+online_mapping_complete,True
+support_mapping_complete,True
+marketing_mapping_complete,True
+,
+REFERENTIAL CONSISTENCY,
+ecommerce_event_references_valid,True
+online_transaction_references_valid,True
+portal_mapping_valid,True
+portal_references_valid,True
+ground_truth_ids_valid,True
+validation_summaries_present,True
