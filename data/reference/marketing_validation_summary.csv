@@ -1,0 +1,53 @@
+metric,value
+MAIN VALIDATION METRICS,
+total_marketing_contacts,12000
+unique_customers,8000
+duplicate_contact_records,4000
+duplicate_contact_rate,0.3333
+marketing_only_customers,1729
+marketing_only_customer_rate,0.2161
+current_consent_rate,0.6596
+nonconsenting_contacts_with_historical_engagement,3993
+contact_timing_valid,True
+email_values_present,True
+postcode_values_present,True
+engagement_counts_nonnegative,True
+link_clicks_not_greater_than_opens,True
+,
+MARKETING CUSTOMER COVERAGE BY SEGMENT,
+coverage_new,71.37%
+coverage_occasional,79.10%
+coverage_regular,83.76%
+coverage_vip,88.80%
+,
+AVERAGE MARKETING CONTACTS PER CUSTOMER BY SEGMENT,
+average_contacts_new,1.38
+average_contacts_occasional,1.48
+average_contacts_regular,1.54
+average_contacts_vip,1.66
+,
+CONSENT RATE BY CUSTOMER SEGMENT,
+consent_rate_new,46.78%
+consent_rate_occasional,59.69%
+consent_rate_regular,75.53%
+consent_rate_vip,86.28%
+,
+AVERAGE MARKETING ENGAGEMENT BY SEGMENT,
+average_emails_opened_new,2.57
+average_emails_opened_occasional,4.51
+average_emails_opened_regular,6.91
+average_emails_opened_vip,10.06
+average_links_clicked_new,0.25
+average_links_clicked_occasional,0.66
+average_links_clicked_regular,1.73
+average_links_clicked_vip,3.53
+,
+INTRODUCED DATA QUALITY ISSUES,
+dq_duplicate_contact,4000
+dq_outdated_postcode,908
+dq_alternative_email,617
+dq_incomplete_postcode,592
+dq_outdated_email,581
+dq_contact_name_typo,569
+dq_missing_contact_name,564
+dq_alternative_postcode,527
