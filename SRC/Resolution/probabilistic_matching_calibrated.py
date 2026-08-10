@@ -1,4 +1,3 @@
-
 # This script is a calibrated second stage of identity resolution for the
 # Universal Customer Record (UCR) project. It uses the frozen configuration
 # selected through ground-truth calibration and applies that configuration

@@ -1,0 +1,37 @@
+metric,value
+INPUT VALIDATION,
+input_mapping_rows,78302
+unique_staging_records,78302
+ground_truth_columns_excluded,True
+eligible_input_records,56521
+eligible_pcl_clusters,10650
+anonymous_input_records,21781
+,
+FINAL UCR ASSIGNMENT,
+final_ucr_profiles,10650
+records_assigned_to_ucr,56521
+deterministically_linked_only_records,54711
+deterministically_linked_only_profiles,9329
+probabilistically_linked_records,592
+probabilistically_linked_profiles,103
+unresolved_singleton_records,1218
+unresolved_singleton_profiles,1218
+anonymous_unresolvable_records,21781
+,
+IDENTIFIER STABILITY,
+assignment_order,minimum_staging_record_id
+ucr_identifier_format,UCR######
+first_ucr_id,UCR000001
+last_ucr_id,UCR010650
+one_ucr_per_pcl_cluster,True
+anonymous_records_without_ucr_id,True
+,
+OUTPUT VALIDATION,
+record_mapping_rows,78302
+mapping_reconciles_to_input,True
+ucr_cluster_summary_rows,10650
+cluster_summary_reconciles_to_ucrs,True
+unresolved_output_rows,1218
+anonymous_output_rows,21781
+cluster_sizes_reconcile,True
+stable_ucr_order_validated,True
