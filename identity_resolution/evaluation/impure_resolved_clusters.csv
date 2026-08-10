@@ -1,0 +1,2 @@
+evaluated_cluster_id,record_count,ground_truth_identity_count,ground_truth_ids,evaluation_splits,source_systems,deterministic_cluster_count,deterministic_cluster_ids
+ECL001246,10,2,GT006095 | GT009829,calibration | evaluation,CRM | ECOMMERCE | MARKETING | ONLINE,2,DCL001246 | DCL008121

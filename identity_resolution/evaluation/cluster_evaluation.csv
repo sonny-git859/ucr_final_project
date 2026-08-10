@@ -1,0 +1,10 @@
+resolution_stage,evaluation_scope,eligible_records,ground_truth_identities,predicted_clusters_touching_scope,true_positive_pairs,false_positive_pairs,false_negative_pairs,pairwise_precision,pairwise_recall,pairwise_f1,bcubed_precision,bcubed_recall,bcubed_f1,weighted_cluster_purity,impure_clusters_touching_scope,split_ground_truth_identities
+deterministic,all,56521,9900,10753,177812,0,4458,1.0,0.975542,0.987619,1.0,0.975893,0.987799,1.0,0,813
+deterministic,calibration,39792,6930,7509,125478,0,2981,1.0,0.976794,0.988261,1.0,0.976847,0.988288,1.0,0,550
+deterministic,evaluation,16729,2970,3244,52334,0,1477,1.0,0.972552,0.986085,1.0,0.973623,0.986635,1.0,0,263
+current_probabilistic,all,56521,9900,10274,179284,4390,2986,0.976099,0.983618,0.979844,0.985931,0.983727,0.984828,0.98896,202,566
+current_probabilistic,calibration,39792,6930,7226,126478,4106,1981,0.968557,0.984579,0.976502,0.98638,0.984455,0.985417,0.993089,186,380
+current_probabilistic,evaluation,16729,2970,3142,52806,2576,1005,0.953487,0.981324,0.967205,0.984862,0.981994,0.983426,0.99743,110,186
+selected_configuration,all,56521,9900,10650,178326,25,3944,0.99986,0.978362,0.988994,0.999912,0.978856,0.989272,0.999912,1,720
+selected_configuration,calibration,39792,6930,7440,125819,25,2640,0.999801,0.979449,0.98952,0.999937,0.979626,0.989677,1.0,1,487
+selected_configuration,evaluation,16729,2970,3211,52507,25,1304,0.999524,0.975767,0.987503,0.999851,0.977025,0.988306,1.0,1,233

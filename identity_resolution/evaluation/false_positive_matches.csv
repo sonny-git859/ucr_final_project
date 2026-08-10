@@ -1,0 +1,2 @@
+cluster_id_1,cluster_id_2,weighted_similarity_score,evidence_coverage,blocking_rules,record_id_1,record_id_2,ground_truth_ids_1,ground_truth_ids_2,shared_ground_truth_ids,is_true_cluster_match,evaluation_scope,best_record_pair_true_match,selected_decision,selected_reason,merge_performed,evaluated_cluster_id_1,evaluated_cluster_id_2
+DCL001246,DCL008121,0.9114,0.6,B04,STG033277,STG024479,GT006095,GT009829,,False,evaluation,False,accepted_merge,Frozen automatic criteria and cluster safeguards satisfied,True,ECL001246,ECL001246

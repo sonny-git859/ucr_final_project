@@ -1,0 +1,15 @@
+resolution_stage,relationship_type,evaluation_scope,accepted_relationships,true_positive_relationships,false_positive_relationships,relationship_precision,scored_candidate_recall,end_to_end_recall,end_to_end_f1
+current_probabilistic,accepted_relationships,all,488,275,213,0.563525,,,
+current_probabilistic,accepted_relationships,calibration,288,189,99,0.65625,,,
+current_probabilistic,accepted_relationships,evaluation,200,86,114,0.43,,,
+current_probabilistic,performed_merges,all,479,272,207,0.56785,,,
+current_probabilistic,performed_merges,calibration,283,187,96,0.660777,,,
+current_probabilistic,performed_merges,evaluation,196,85,111,0.433673,,,
+selected_configuration,accepted_relationships,all,103,102,1,0.990291,,,
+selected_configuration,accepted_relationships,calibration,69,69,0,1.0,,,
+selected_configuration,accepted_relationships,evaluation,34,33,1,0.970588,,,
+selected_configuration,performed_merges,all,103,102,1,0.990291,,,
+selected_configuration,performed_merges,calibration,69,69,0,1.0,,,
+selected_configuration,performed_merges,evaluation,34,33,1,0.970588,,,
+selected_configuration,threshold_classification,calibration,69,69,0,1.0,0.242105,0.1133,0.20354
+selected_configuration,threshold_classification,evaluation,34,33,1,0.970588,0.253846,0.115789,0.206897

@@ -1,0 +1,15 @@
+parameter,value
+selection_status,Precision target achieved; recall maximised subject to the target
+minimum_precision_target,0.99
+minimum_calibration_matches,10
+automatic_match_threshold,0.91
+minimum_evidence_coverage,0.55
+calibration_precision,1.0
+calibration_end_to_end_recall,0.1133
+calibration_end_to_end_f1,0.20354
+email_weight,0.3
+phone_weight,0.25
+name_weight,0.2
+address_weight,0.1
+postcode_weight,0.1
+date_of_birth_weight,0.05

@@ -1,0 +1,55 @@
+metric,value
+INPUT VALIDATION,
+input_records,78302
+ground_truth_mapping_records,78302
+ground_truth_sources,5
+eligible_records,56521
+anonymous_unresolvable_records,21781
+ground_truth_excluded_from_matching,True
+,
+IDENTITY-LEVEL SPLIT,
+ground_truth_identities,9974
+calibration_identities,6930
+held_out_evaluation_identities,2970
+anonymous_only_identities,74
+,
+CURRENT PROVISIONAL CONFIGURATION,
+current_automatic_match_threshold,0.85
+current_minimum_evidence_coverage,0.5
+current_probabilistic_clusters,10274
+current_pairwise_precision_all_records,0.976099
+current_impure_clusters,202
+,
+SELECTED FROZEN CONFIGURATION,
+selection_status,Precision target achieved; recall maximised subject to the target
+selected_automatic_match_threshold,0.91
+selected_minimum_evidence_coverage,0.55
+calibration_precision,1.0
+calibration_end_to_end_recall,0.1133
+selected_evaluated_clusters,10650
+selected_pairwise_precision_all_records,0.99986
+selected_impure_clusters,1
+,
+HELD-OUT EVALUATION,
+held_out_blocking_recall,0.45614
+held_out_candidate_reduction_ratio,0.998025
+held_out_deterministic_edge_precision,1.0
+held_out_selected_relationship_precision,0.970588
+held_out_selected_end_to_end_recall,0.115789
+held_out_selected_end_to_end_f1,0.206897
+held_out_pairwise_precision,0.999524
+held_out_pairwise_recall,0.975767
+held_out_pairwise_f1,0.987503
+held_out_bcubed_precision,0.999851
+held_out_bcubed_recall,0.977025
+held_out_bcubed_f1,0.988306
+,
+ERROR ANALYSIS,
+selected_false_positive_relationships,1
+selected_false_negative_cluster_pairs,792
+selected_split_ground_truth_identities,720
+selected_impure_resolved_clusters,1
+,
+ABSTENTION VALIDATION,
+anonymous_records_evaluated_separately,21781
+anonymous_records_remain_unclustered,True

@@ -1,0 +1,4 @@
+evaluation_scope,eligible_records,ground_truth_identities,predicted_clusters_touching_scope,true_positive_pairs,false_positive_pairs,false_negative_pairs,pairwise_precision,pairwise_recall,pairwise_f1,bcubed_precision,bcubed_recall,bcubed_f1,weighted_cluster_purity,impure_clusters_touching_scope,split_ground_truth_identities,accepted_deterministic_edges,true_deterministic_edges,false_deterministic_edges,deterministic_edge_precision
+all,56521,9900,10753,177812,0,4458,1.0,0.975542,0.987619,1.0,0.975893,0.987799,1.0,0,813,45768,45768,0,1.0
+calibration,39792,6930,7509,125478,0,2981,1.0,0.976794,0.988261,1.0,0.976847,0.988288,1.0,0,550,32283,32283,0,1.0
+evaluation,16729,2970,3244,52334,0,1477,1.0,0.972552,0.986085,1.0,0.973623,0.986635,1.0,0,263,13485,13485,0,1.0

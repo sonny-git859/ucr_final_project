@@ -1,0 +1,4 @@
+evaluation_scope,possible_cluster_pairs,candidate_cluster_pairs,candidate_reduction_ratio,true_cross_cluster_pairs,generated_true_cluster_pairs,cluster_pair_blocking_recall,true_cross_cluster_record_pairs,generated_true_cross_cluster_record_pairs,record_pair_blocking_recall
+all,57808128,115363,0.998004,894,415,0.464206,4458,2150,0.482279
+calibration,28188786,56850,0.997983,609,285,0.46798,2981,1454,0.487756
+evaluation,29619342,58513,0.998025,285,130,0.45614,1477,696,0.471225
