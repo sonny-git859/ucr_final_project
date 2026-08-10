@@ -1,0 +1,44 @@
+metric,value
+INPUT VALIDATION,
+silver_input_records,78302
+mapping_input_records,78302
+input_ucr_profiles,10650
+silver_mapping_reconciliation,True
+protected_columns_excluded,True
+,
+GOLDEN RECORD CONSTRUCTION,
+golden_master_records,10650
+record_links,56521
+attribute_provenance_rows,106500
+interaction_summary_rows,10650
+unresolved_singleton_profiles_retained,1218
+anonymous_records_excluded,21781
+,
+ASSIGNED RECORDS BY SOURCE,
+crm_assigned_records,8000
+ecommerce_assigned_records,13302
+marketing_assigned_records,12000
+online_assigned_records,18219
+support_assigned_records,5000
+,
+IDENTITY COMPLETENESS,
+mean_identity_attribute_completeness,0.8891
+profiles_with_name,10490
+profiles_with_email,10553
+profiles_with_phone,9441
+profiles_with_address,9446
+,
+INTERACTION TOTALS,
+ecommerce_transactions,13302
+ecommerce_revenue,937538.48
+identified_online_sessions,18219
+marketing_contacts,12000
+support_tickets,5000
+,
+OUTPUT VALIDATION,
+one_master_record_per_ucr,True
+all_assigned_records_linked,True
+all_master_attributes_have_provenance,True
+name_bundles_are_coherent,True
+address_bundles_are_coherent,True
+interaction_counts_reconcile,True
