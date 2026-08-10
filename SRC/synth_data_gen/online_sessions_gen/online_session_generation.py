@@ -1746,8 +1746,8 @@ def validate_online_session_records(
     )
 
     print(
-    f"Eligible E-commerce transactions: "
-    f"{eligible_ecommerce_transactions:,}"
+        f"Eligible E-commerce transactions: "
+        f"{eligible_ecommerce_transactions:,}"
     )
 
     print(

@@ -1,0 +1,47 @@
+metric,value
+MAIN VALIDATION METRICS,
+total_support_tickets,5000
+unique_customers,3000
+email_channel_rate,0.6992
+phone_channel_rate,0.3008
+resolved_ticket_rate,0.8576
+open_ticket_rate,0.1424
+average_resolution_time_hours,15.62
+refund_request_most_frequent,True
+accessibility_over_60_rate,0.27
+accessibility_under_60_rate,0.1566
+accessibility_age_weighting_valid,True
+ticket_timing_valid,True
+resolution_time_logic_valid,True
+,
+SUPPORT CUSTOMER COVERAGE BY SEGMENT,
+coverage_new,23.61%
+coverage_occasional,29.25%
+coverage_regular,32.79%
+coverage_vip,36.86%
+,
+AVERAGE SUPPORT TICKETS PER CUSTOMER BY SEGMENT,
+average_tickets_new,1.47
+average_tickets_occasional,1.59
+average_tickets_regular,1.78
+average_tickets_vip,1.86
+,
+ISSUE CATEGORY DISTRIBUTION,
+refund_request_count,1855
+accessibility_count,949
+complaint_count,978
+enquiry_count,1218
+,
+MISSING REQUESTER DETAILS BY CONTACT CHANNEL,
+missing_phone_rate_email_tickets,30.64%
+missing_email_rate_phone_tickets,29.99%
+email_channel_email_required,True
+phone_channel_phone_required,True
+,
+INTRODUCED DATA QUALITY ISSUES,
+dq_missing_phone,1071
+dq_missing_email,451
+dq_email_typo,335
+dq_phone_error,288
+dq_incorrect_issue_category,205
+dq_name_typo,144
