@@ -1,0 +1,39 @@
+metric,value
+MAIN VALIDATION METRICS,
+total_sessions,40000
+unique_customers,8000
+guest_session_rate,0.6311
+portal_holder_guest_session_rate,0.1736
+mobile_session_rate,0.6531
+basket_creation_rate,0.3471
+basket_conversion_rate,0.1615
+converted_sessions,6460
+ecommerce_transactions,13302
+eligible_ecommerce_transactions,10747
+online_channel_rate_among_eligible_transactions,0.6011
+ecommerce_online_transaction_coverage,0.4856
+linked_transaction_ids_unique,True
+linked_transactions_valid,True
+registered_conversion_portal_match,True
+session_timing_valid,True
+session_duration_reconciliation,True
+,
+ONLINE CUSTOMER COVERAGE BY SEGMENT,
+coverage_new,70.23%
+coverage_occasional,78.84%
+coverage_regular,84.63%
+coverage_vip,89.42%
+,
+AVERAGE SESSIONS PER CUSTOMER BY SEGMENT,
+average_sessions_new,3.93
+average_sessions_occasional,4.72
+average_sessions_regular,5.49
+average_sessions_vip,6.27
+,
+AVERAGE SESSION DURATION BY SEGMENT,
+average_duration_seconds_new,318.19
+average_duration_seconds_occasional,517.61
+average_duration_seconds_regular,783.06
+average_duration_seconds_vip,992.81
+average_duration_seconds_converted,904.88
+average_duration_seconds_non_converted,598.59
