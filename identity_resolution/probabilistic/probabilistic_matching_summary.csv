@@ -1,0 +1,72 @@
+metric,value
+INPUT VALIDATION,
+input_records,78302
+deterministic_mapping_rows,78302
+ground_truth_columns_excluded,True
+deterministic_clusters,10753
+eligible_records,56521
+anonymous_unresolvable_records,21781
+,
+EXPERIMENTAL PARAMETERS,
+automatic_match_threshold,0.85
+review_match_threshold,0.7
+minimum_automatic_evidence_coverage,0.5
+maximum_block_size,100
+email_weight,0.3
+phone_weight,0.25
+name_weight,0.2
+address_weight,0.1
+postcode_weight,0.1
+date_of_birth_weight,0.05
+,
+BLOCKING RESULTS,
+B01_populated_keys,10576
+B01_used_multi_cluster_keys,37
+B01_skipped_oversized_keys,0
+B01_candidate_pairs_contributed,37
+B02_populated_keys,1362
+B02_used_multi_cluster_keys,1202
+B02_skipped_oversized_keys,0
+B02_candidate_pairs_contributed,48692
+B03_populated_keys,9482
+B03_used_multi_cluster_keys,47
+B03_skipped_oversized_keys,0
+B03_candidate_pairs_contributed,47
+B04_populated_keys,3149
+B04_used_multi_cluster_keys,1530
+B04_skipped_oversized_keys,0
+B04_candidate_pairs_contributed,62684
+B05_populated_keys,10504
+B05_used_multi_cluster_keys,57
+B05_skipped_oversized_keys,0
+B05_candidate_pairs_contributed,57
+B06_populated_keys,5323
+B06_used_multi_cluster_keys,1521
+B06_skipped_oversized_keys,0
+B06_candidate_pairs_contributed,4108
+possible_cluster_pairs,57808128
+candidate_cluster_pairs,115363
+candidate_reduction_ratio,0.998004
+record_pairs_scored,3677758
+,
+MATCH DECISIONS,
+accepted_probabilistic_relationships,488
+accepted_probabilistic_merges,479
+accepted_transitive_support,9
+review_matches,8684
+rejected_matches,106191
+,
+CLUSTER RESULTS,
+probabilistically_linked_records,3509
+deterministically_linked_only_records,51999
+unresolved_singleton_records,1013
+anonymous_unresolvable_records_final,21781
+probabilistic_clusters,10274
+largest_probabilistic_cluster,24
+,
+OUTPUT VALIDATION,
+record_mapping_rows,78302
+mapping_reconciles_to_input,True
+candidate_decisions_reconcile,True
+unresolved_output_rows,1013
+anonymous_records_remain_unclustered,True
