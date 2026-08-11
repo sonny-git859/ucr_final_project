@@ -1,10 +1,13 @@
 # This script joins the consolidated Silver records to the final operational
 # UCR mapping and builds one transparent master profile per assigned UCR. It
 # uses explicit survivorship rules, preserves record-level links, aggregates
-# system interactions and records attribute-level provenance.
+# system interactions and records attribute-level provenance. Two supporting
+# audit datasets preserve candidate values and record-level history for the
+# SCV and qualitative Gold-layer evaluation.
 #
 # Anonymous records are excluded because they do not have a final UCR ID.
-# Protected ground truth and evaluation outputs are never accessed.
+# Protected ground truth and identity-resolution evaluation outputs are never
+# accessed.
 
 from __future__ import annotations
 
@@ -29,11 +32,14 @@ FINAL_DIRECTORY = Path("identity_resolution") / "final"
 RECORD_MAPPING_INPUT = FINAL_DIRECTORY / "record_to_ucr_mapping.csv"
 CLUSTER_SUMMARY_INPUT = FINAL_DIRECTORY / "ucr_cluster_summary.csv"
 OUTPUT_DIRECTORY = Path("data") / "gold"
+EVALUATION_DIRECTORY_NAME = "evaluation"
 
 MASTER_FILENAME = "ucr_master_records.csv"
 RECORD_LINKS_FILENAME = "ucr_record_links.csv"
 PROVENANCE_FILENAME = "ucr_attribute_provenance.csv"
+ATTRIBUTE_CANDIDATES_FILENAME = "ucr_attribute_candidates.csv"
 INTERACTION_FILENAME = "ucr_interaction_summary.csv"
+INTERACTION_DETAILS_FILENAME = "ucr_interaction_details.csv"
 SUMMARY_FILENAME = "golden_record_summary.csv"
 
 SOURCE_SYSTEMS = (
@@ -90,16 +96,25 @@ SILVER_REQUIRED_COLUMNS = {
     "date_of_birth_normalised",
     "record_created_date",
     "preferred_contact_channel",
+    "portal_user_id",
     "transaction_id",
     "transaction_date_time",
+    "guest_transaction",
     "transaction_total",
+    "ticket_type",
     "ticket_quantity",
+    "unit_price",
     "event_id",
+    "event_name",
+    "event_category",
     "event_date",
     "session_id",
     "linked_transaction_id",
+    "guest_session",
     "session_date_time_start",
+    "session_date_time_end",
     "session_duration_seconds",
+    "device_type",
     "basket_created",
     "basket_converted",
     "marketing_contact_id",
@@ -109,6 +124,8 @@ SILVER_REQUIRED_COLUMNS = {
     "links_clicked_count",
     "support_ticket_id",
     "support_ticket_created_date_time",
+    "contact_channel",
+    "issue_category",
     "ticket_status",
     "resolution_time_hours_minutes",
 }
@@ -197,6 +214,121 @@ PROVENANCE_COLUMNS = [
     "populated_candidate_records",
     "distinct_candidate_values",
 ]
+
+ATTRIBUTE_CANDIDATE_COLUMNS = [
+    "ucr_id",
+    "attribute_name",
+    "candidate_value",
+    "candidate_value_key",
+    "selection_key",
+    "selected_value",
+    "selected_selection_key",
+    "source_system",
+    "source_record_id",
+    "staging_record_id",
+    "source_priority",
+    "record_rank_date",
+    "selection_key_frequency",
+    "is_selected_source",
+    "matches_selected_value",
+    "is_alternative_value",
+    "selection_rule",
+]
+
+ATTRIBUTE_CANDIDATE_SPECS = {
+    "first_name": ("_name_first", "_name_key"),
+    "surname": ("_name_surname", "_name_key"),
+    "full_name": ("_full_name_value", "_name_key"),
+    "date_of_birth": ("_dob_value", "_dob_key"),
+    "primary_email": ("_email_value", "_email_key"),
+    "telephone_number": ("_phone_value", "_phone_key"),
+    "address": ("_address_value", "_address_key"),
+    "postcode": ("_postcode_value", "_address_key"),
+    "preferred_contact_channel": (
+        "_channel_value",
+        "_channel_key",
+    ),
+    "registration_date": (
+        "_registration_value",
+        "_registration_key",
+    ),
+}
+
+INTERACTION_SOURCE_COLUMNS = [
+    "ucr_id",
+    "staging_record_id",
+    "source_system",
+    "source_record_id",
+    "portal_user_id",
+    "record_created_date",
+    "preferred_contact_channel",
+    "transaction_id",
+    "transaction_date_time",
+    "guest_transaction",
+    "event_id",
+    "event_name",
+    "event_category",
+    "event_date",
+    "ticket_type",
+    "ticket_quantity",
+    "unit_price",
+    "transaction_total",
+    "marketing_contact_id",
+    "last_contact_date",
+    "consent_status",
+    "emails_opened_count",
+    "links_clicked_count",
+    "session_id",
+    "linked_transaction_id",
+    "guest_session",
+    "session_date_time_start",
+    "session_date_time_end",
+    "session_duration_seconds",
+    "device_type",
+    "basket_created",
+    "basket_converted",
+    "support_ticket_id",
+    "support_ticket_created_date_time",
+    "contact_channel",
+    "issue_category",
+    "ticket_status",
+    "resolution_time_hours_minutes",
+]
+
+INTERACTION_DETAIL_COLUMNS = [
+    "ucr_id",
+    "staging_record_id",
+    "source_system",
+    "source_record_id",
+    "interaction_type",
+    "interaction_id",
+    "interaction_date_time",
+    *INTERACTION_SOURCE_COLUMNS[4:],
+]
+
+INTERACTION_TYPE_MAP = {
+    "CRM": "crm_profile_record",
+    "ECOMMERCE": "ecommerce_transaction",
+    "MARKETING": "marketing_contact",
+    "ONLINE": "online_session",
+    "SUPPORT": "support_ticket",
+}
+
+INTERACTION_ID_COLUMNS = {
+    "CRM": "source_record_id",
+    "ECOMMERCE": "transaction_id",
+    "MARKETING": "marketing_contact_id",
+    "ONLINE": "session_id",
+    "SUPPORT": "support_ticket_id",
+}
+
+INTERACTION_DATE_COLUMNS = {
+    "CRM": "record_created_date",
+    "ECOMMERCE": "transaction_date_time",
+    "MARKETING": "last_contact_date",
+    "ONLINE": "session_date_time_start",
+    "SUPPORT": "support_ticket_created_date_time",
+}
 
 NAME_RULE = (
     "Prefer a complete name pair; then use source priority "
@@ -416,7 +548,10 @@ def parse_arguments() -> argparse.Namespace:
         "--output-dir",
         type=Path,
         default=OUTPUT_DIRECTORY,
-        help=f"Gold output directory. Default: {OUTPUT_DIRECTORY}",
+        help=(
+            "Gold output directory. Audit datasets are written to its "
+            f"evaluation subdirectory. Default: {OUTPUT_DIRECTORY}"
+        ),
     )
     return parser.parse_args()
 
@@ -677,6 +812,11 @@ def prepare_survivorship_candidates(
     names = candidates.apply(derive_name_values, axis=1)
     candidates["_name_first"] = [value[0] for value in names]
     candidates["_name_surname"] = [value[1] for value in names]
+    candidates["_full_name_value"] = (
+        candidates["_name_first"]
+        + " "
+        + candidates["_name_surname"]
+    ).str.strip()
     candidates["_name_key"] = (
         candidates["_name_first"].map(normalise_key)
         + "|"
@@ -895,10 +1035,123 @@ def build_provenance_row(
     }
 
 
+def build_attribute_candidates(
+    candidates: pd.DataFrame,
+    provenance: pd.DataFrame,
+) -> pd.DataFrame:
+    # Preserve every populated source value considered by survivorship.
+    candidate_frames: list[pd.DataFrame] = []
+    source_columns = [
+        "ucr_id",
+        "source_system",
+        "source_record_id",
+        "staging_record_id",
+        "_source_priority",
+        "_record_rank_date",
+    ]
+
+    for attribute, columns in ATTRIBUTE_CANDIDATE_SPECS.items():
+        value_column, key_column = columns
+        frame = candidates[
+            source_columns + [value_column, key_column]
+        ].copy()
+        frame = frame.rename(
+            columns={
+                value_column: "candidate_value",
+                key_column: "selection_key",
+                "_source_priority": "source_priority",
+                "_record_rank_date": "record_rank_date",
+            }
+        )
+        frame["attribute_name"] = attribute
+        populated_key = frame["selection_key"].map(clean_value).ne("")
+        frame = frame.loc[populated_key].copy()
+        frame["selection_key_frequency"] = frame.groupby(
+            ["ucr_id", "selection_key"],
+            sort=False,
+        )["staging_record_id"].transform("size")
+        populated_value = frame["candidate_value"].map(
+            clean_value
+        ).ne("")
+        candidate_frames.append(frame.loc[populated_value].copy())
+
+    if not candidate_frames:
+        return pd.DataFrame(columns=ATTRIBUTE_CANDIDATE_COLUMNS)
+
+    details = pd.concat(candidate_frames, ignore_index=True)
+    details["candidate_value_key"] = details["candidate_value"].map(
+        normalise_key
+    )
+    selections = provenance[
+        [
+            "ucr_id",
+            "attribute_name",
+            "selected_value",
+            "staging_record_id",
+            "selection_rule",
+        ]
+    ].rename(
+        columns={"staging_record_id": "selected_staging_record_id"}
+    )
+    details = details.merge(
+        selections,
+        on=["ucr_id", "attribute_name"],
+        how="left",
+        validate="many_to_one",
+    )
+    details["is_selected_source"] = (
+        details["selected_staging_record_id"].map(clean_value).ne("")
+        & details["staging_record_id"].eq(
+            details["selected_staging_record_id"]
+        )
+    )
+    selected_keys = details.loc[
+        details["is_selected_source"],
+        ["ucr_id", "attribute_name", "selection_key"],
+    ].rename(columns={"selection_key": "selected_selection_key"})
+    if selected_keys.duplicated(
+        subset=["ucr_id", "attribute_name"]
+    ).any():
+        raise ValueError(
+            "Attribute candidates contain duplicate selected sources."
+        )
+
+    details = details.merge(
+        selected_keys,
+        on=["ucr_id", "attribute_name"],
+        how="left",
+        validate="many_to_one",
+    )
+    details["selected_selection_key"] = details[
+        "selected_selection_key"
+    ].fillna("")
+    details["matches_selected_value"] = (
+        details["selected_selection_key"].map(clean_value).ne("")
+        & details["selection_key"].eq(
+            details["selected_selection_key"]
+        )
+    )
+    details["is_alternative_value"] = (
+        details["selected_selection_key"].map(clean_value).ne("")
+        & ~details["matches_selected_value"]
+    )
+    return details[ATTRIBUTE_CANDIDATE_COLUMNS].sort_values(
+        [
+            "ucr_id",
+            "attribute_name",
+            "is_selected_source",
+            "source_priority",
+            "staging_record_id",
+        ],
+        ascending=[True, True, False, True, True],
+        kind="stable",
+    ).reset_index(drop=True)
+
+
 def build_identity_profiles(
     linked: pd.DataFrame,
     clusters: pd.DataFrame,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     # Build selected identity attributes and long-form provenance.
     candidates = prepare_survivorship_candidates(linked)
     cluster_lookup = clusters.set_index("ucr_id")
@@ -1011,7 +1264,11 @@ def build_identity_profiles(
         provenance_rows,
         columns=PROVENANCE_COLUMNS,
     )
-    return master, provenance
+    attribute_candidates = build_attribute_candidates(
+        candidates,
+        provenance,
+    )
+    return master, provenance, attribute_candidates
 
 
 ###############################################################################
@@ -1248,24 +1505,28 @@ def build_interaction_summary(
         output = output.merge(aggregate, on="ucr_id", how="left")
 
     count_columns = [
-        column
-        for column in output.columns
-        if column.endswith("_count")
-        or column
-        in {
-            "crm_record_count",
-            "ecommerce_record_count",
-            "marketing_record_count",
-            "online_record_count",
-            "support_record_count",
-            "ecommerce_total_tickets",
-            "online_baskets_created",
-            "online_baskets_converted",
-            "marketing_emails_opened",
-            "marketing_links_clicked",
-        }
+        "crm_record_count",
+        "ecommerce_record_count",
+        "marketing_record_count",
+        "online_record_count",
+        "support_record_count",
+        "ecommerce_transaction_count",
+        "ecommerce_total_tickets",
+        "ecommerce_distinct_events",
+        "online_session_count",
+        "online_baskets_created",
+        "online_baskets_converted",
+        "online_linked_transaction_count",
+        "marketing_contact_count",
+        "marketing_emails_opened",
+        "marketing_links_clicked",
+        "support_ticket_count",
+        "support_open_ticket_count",
+        "support_resolved_ticket_count",
     ]
     for column in count_columns:
+        if column not in output.columns:
+            output[column] = 0
         output[column] = pd.to_numeric(
             output[column],
             errors="coerce",
@@ -1273,10 +1534,15 @@ def build_interaction_summary(
 
     zero_float_columns = [
         "ecommerce_total_revenue",
+        "ecommerce_average_transaction_value",
         "online_total_duration_seconds",
+        "online_average_duration_seconds",
         "online_basket_conversion_rate",
+        "support_average_resolution_hours",
     ]
     for column in zero_float_columns:
+        if column not in output.columns:
+            output[column] = 0
         output[column] = pd.to_numeric(
             output[column],
             errors="coerce",
@@ -1298,11 +1564,54 @@ def build_interaction_summary(
         "last_recorded_interaction",
     ]
     for column in text_columns:
+        if column not in output.columns:
+            output[column] = ""
         output[column] = output[column].fillna("")
 
     return output.sort_values("ucr_id", kind="stable").reset_index(
         drop=True
     )
+
+
+def build_interaction_details(linked: pd.DataFrame) -> pd.DataFrame:
+    # Preserve one Gold interaction-history row per linked source record.
+    details = linked[INTERACTION_SOURCE_COLUMNS].copy()
+    details["interaction_type"] = details["source_system"].map(
+        INTERACTION_TYPE_MAP
+    )
+    details["interaction_id"] = ""
+    details["interaction_date_time"] = ""
+
+    for source_system in SOURCE_SYSTEMS:
+        source_rows = details["source_system"].eq(source_system)
+        identifier_column = INTERACTION_ID_COLUMNS[source_system]
+        date_column = INTERACTION_DATE_COLUMNS[source_system]
+        identifiers = details.loc[
+            source_rows,
+            identifier_column,
+        ].map(clean_value)
+        fallback = details.loc[
+            source_rows,
+            "source_record_id",
+        ].map(clean_value)
+        details.loc[source_rows, "interaction_id"] = identifiers.where(
+            identifiers.ne(""),
+            fallback,
+        )
+        details.loc[source_rows, "interaction_date_time"] = details.loc[
+            source_rows,
+            date_column,
+        ].map(clean_value)
+
+    return details[INTERACTION_DETAIL_COLUMNS].sort_values(
+        [
+            "ucr_id",
+            "interaction_date_time",
+            "source_system",
+            "staging_record_id",
+        ],
+        kind="stable",
+    ).reset_index(drop=True)
 
 
 ###############################################################################
@@ -1472,6 +1781,134 @@ def validate_provenance(
             )
 
 
+def validate_attribute_candidates(
+    provenance: pd.DataFrame,
+    attribute_candidates: pd.DataFrame,
+    record_links: pd.DataFrame,
+) -> None:
+    # Validate candidate coverage, source links and selection flags.
+    if attribute_candidates.empty:
+        raise ValueError("Attribute-candidate output is unexpectedly empty.")
+    if attribute_candidates.duplicated(
+        subset=["ucr_id", "attribute_name", "staging_record_id"]
+    ).any():
+        raise ValueError("Attribute candidates contain duplicate records.")
+    if attribute_candidates["candidate_value"].map(
+        clean_value
+    ).eq("").any():
+        raise ValueError("Attribute candidates contain blank values.")
+    if attribute_candidates["selection_key"].map(
+        clean_value
+    ).eq("").any():
+        raise ValueError("Attribute candidates contain blank selection keys.")
+
+    links = record_links[
+        [
+            "ucr_id",
+            "staging_record_id",
+            "source_system",
+            "source_record_id",
+        ]
+    ]
+    checked = attribute_candidates.merge(
+        links,
+        on=[
+            "ucr_id",
+            "staging_record_id",
+            "source_system",
+            "source_record_id",
+        ],
+        how="left",
+        indicator=True,
+        validate="many_to_one",
+    )
+    if not checked["_merge"].eq("both").all():
+        raise ValueError(
+            "An attribute candidate is not linked to its UCR."
+        )
+
+    expected_priorities = attribute_candidates["source_system"].map(
+        SOURCE_PRIORITY
+    )
+    actual_priorities = pd.to_numeric(
+        attribute_candidates["source_priority"],
+        errors="coerce",
+    )
+    if actual_priorities.isna().any() or not actual_priorities.eq(
+        expected_priorities
+    ).all():
+        raise ValueError("An attribute candidate has invalid priority.")
+
+    selected = attribute_candidates.loc[
+        attribute_candidates["is_selected_source"]
+    ].copy()
+    if selected.duplicated(
+        subset=["ucr_id", "attribute_name"]
+    ).any():
+        raise ValueError("An attribute has multiple selected candidates.")
+    populated_provenance = provenance.loc[
+        provenance["selected_value"].map(clean_value).ne("")
+    ]
+    expected_pairs = set(
+        map(
+            tuple,
+            populated_provenance[["ucr_id", "attribute_name"]].to_numpy(),
+        )
+    )
+    actual_pairs = set(
+        map(
+            tuple,
+            selected[["ucr_id", "attribute_name"]].to_numpy(),
+        )
+    )
+    if expected_pairs != actual_pairs:
+        raise ValueError(
+            "Selected attribute candidates do not match provenance."
+        )
+
+    selected_check = selected.merge(
+        populated_provenance[
+            [
+                "ucr_id",
+                "attribute_name",
+                "selected_value",
+                "staging_record_id",
+            ]
+        ],
+        on=["ucr_id", "attribute_name"],
+        how="inner",
+        validate="one_to_one",
+        suffixes=("", "_provenance"),
+    )
+    if not selected_check["candidate_value"].eq(
+        selected_check["selected_value_provenance"]
+    ).all():
+        raise ValueError(
+            "A selected candidate value differs from provenance."
+        )
+    if not selected_check["staging_record_id"].eq(
+        selected_check["staging_record_id_provenance"]
+    ).all():
+        raise ValueError(
+            "A selected candidate source differs from provenance."
+        )
+    if not selected["matches_selected_value"].all():
+        raise ValueError(
+            "A selected source does not match the selected value."
+        )
+
+    expected_alternative = (
+        attribute_candidates["selected_selection_key"].map(
+            clean_value
+        ).ne("")
+        & ~attribute_candidates["matches_selected_value"]
+    )
+    if not attribute_candidates["is_alternative_value"].eq(
+        expected_alternative
+    ).all():
+        raise ValueError("Attribute alternative flags are inconsistent.")
+
+
 def validate_interactions(
     linked: pd.DataFrame,
     interactions: pd.DataFrame,
@@ -1520,6 +1957,57 @@ def validate_interactions(
         raise ValueError("E-commerce revenue does not reconcile.")
 
 
+def validate_interaction_details(
+    linked: pd.DataFrame,
+    interaction_details: pd.DataFrame,
+) -> None:
+    # Confirm exact record-level preservation of interaction history.
+    if len(interaction_details) != len(linked):
+        raise ValueError("Interaction-detail rows do not reconcile.")
+    if not interaction_details["staging_record_id"].is_unique:
+        raise ValueError("Interaction details contain duplicate records.")
+
+    expected = linked[INTERACTION_SOURCE_COLUMNS].copy()
+    expected = expected.sort_values("staging_record_id", kind="stable")
+    expected = expected.reset_index(drop=True).fillna("").astype(str)
+    actual = interaction_details[INTERACTION_SOURCE_COLUMNS].copy()
+    actual = actual.sort_values("staging_record_id", kind="stable")
+    actual = actual.reset_index(drop=True).fillna("").astype(str)
+    if not expected.equals(actual):
+        raise ValueError(
+            "Interaction details do not preserve linked source values."
+        )
+
+    expected_types = interaction_details["source_system"].map(
+        INTERACTION_TYPE_MAP
+    )
+    if not interaction_details["interaction_type"].eq(
+        expected_types
+    ).all():
+        raise ValueError("An interaction type is inconsistent.")
+    if interaction_details["interaction_id"].map(
+        clean_value
+    ).eq("").any():
+        raise ValueError("An interaction detail has no identifier.")
+
+    for source_system, date_column in INTERACTION_DATE_COLUMNS.items():
+        source_rows = interaction_details["source_system"].eq(
+            source_system
+        )
+        actual_dates = interaction_details.loc[
+            source_rows,
+            "interaction_date_time",
+        ].map(clean_value)
+        expected_dates = interaction_details.loc[
+            source_rows,
+            date_column,
+        ].map(clean_value)
+        if not actual_dates.eq(expected_dates).all():
+            raise ValueError(
+                f"Interaction dates do not reconcile for {source_system}."
+            )
+
+
 def validate_protected_outputs(
     outputs: Iterable[pd.DataFrame],
 ) -> None:
@@ -1534,15 +2022,30 @@ def validate_outputs(
     master: pd.DataFrame,
     record_links: pd.DataFrame,
     provenance: pd.DataFrame,
+    attribute_candidates: pd.DataFrame,
     interactions: pd.DataFrame,
+    interaction_details: pd.DataFrame,
 ) -> None:
     # Run every Gold-layer output validation.
     validate_record_links(linked, record_links)
     validate_master_profiles(master, clusters)
     validate_provenance(master, provenance, record_links)
+    validate_attribute_candidates(
+        provenance,
+        attribute_candidates,
+        record_links,
+    )
     validate_interactions(linked, interactions)
+    validate_interaction_details(linked, interaction_details)
     validate_protected_outputs(
-        [master, record_links, provenance, interactions]
+        [
+            master,
+            record_links,
+            provenance,
+            attribute_candidates,
+            interactions,
+            interaction_details,
+        ]
     )
 
 
@@ -1558,7 +2061,9 @@ def build_golden_summary(
     master: pd.DataFrame,
     record_links: pd.DataFrame,
     provenance: pd.DataFrame,
+    attribute_candidates: pd.DataFrame,
     interactions: pd.DataFrame,
+    interaction_details: pd.DataFrame,
 ) -> pd.DataFrame:
     # Build a two-column Gold construction and validation report.
     rows: list[dict[str, object]] = []
@@ -1617,6 +2122,41 @@ def build_golden_summary(
             {
                 "metric": "anonymous_records_excluded",
                 "value": anonymous_count,
+            },
+        ]
+    )
+
+    add_summary_section(rows, "GOLD EVALUATION SUPPORT")
+    rows.extend(
+        [
+            {
+                "metric": "attribute_candidate_rows",
+                "value": len(attribute_candidates),
+            },
+            {
+                "metric": "alternative_attribute_candidate_rows",
+                "value": int(
+                    attribute_candidates["is_alternative_value"].sum()
+                ),
+            },
+            {
+                "metric": "profiles_with_attribute_alternatives",
+                "value": attribute_candidates.loc[
+                    attribute_candidates["is_alternative_value"],
+                    "ucr_id",
+                ].nunique(),
+            },
+            {
+                "metric": "interaction_detail_rows",
+                "value": len(interaction_details),
+            },
+            {
+                "metric": "event_linked_interaction_rows",
+                "value": int(
+                    interaction_details["event_id"].map(
+                        clean_value
+                    ).ne("").sum()
+                ),
             },
         ]
     )
@@ -1708,6 +2248,10 @@ def build_golden_summary(
                 "value": True,
             },
             {
+                "metric": "attribute_candidates_reconcile",
+                "value": True,
+            },
+            {
                 "metric": "name_bundles_are_coherent",
                 "value": True,
             },
@@ -1717,6 +2261,10 @@ def build_golden_summary(
             },
             {
                 "metric": "interaction_counts_reconcile",
+                "value": True,
+            },
+            {
+                "metric": "interaction_details_reconcile",
                 "value": True,
             },
         ]
@@ -1734,11 +2282,17 @@ def write_outputs(
     master: pd.DataFrame,
     record_links: pd.DataFrame,
     provenance: pd.DataFrame,
+    attribute_candidates: pd.DataFrame,
     interactions: pd.DataFrame,
+    interaction_details: pd.DataFrame,
     summary: pd.DataFrame,
 ) -> None:
-    # Write all validated Gold-layer CSV files.
+    # Write operational Gold files and separate evaluation-support files.
     output_directory.mkdir(parents=True, exist_ok=True)
+    evaluation_directory = (
+        output_directory / EVALUATION_DIRECTORY_NAME
+    )
+    evaluation_directory.mkdir(parents=True, exist_ok=True)
     master.to_csv(
         output_directory / MASTER_FILENAME,
         index=False,
@@ -1751,14 +2305,42 @@ def write_outputs(
         output_directory / PROVENANCE_FILENAME,
         index=False,
     )
+    attribute_candidates.to_csv(
+        evaluation_directory / ATTRIBUTE_CANDIDATES_FILENAME,
+        index=False,
+    )
     interactions.to_csv(
         output_directory / INTERACTION_FILENAME,
+        index=False,
+    )
+    interaction_details.to_csv(
+        evaluation_directory / INTERACTION_DETAILS_FILENAME,
         index=False,
     )
     summary.to_csv(
         output_directory / SUMMARY_FILENAME,
         index=False,
     )
+
+    expected_paths = [
+        output_directory / MASTER_FILENAME,
+        output_directory / RECORD_LINKS_FILENAME,
+        output_directory / PROVENANCE_FILENAME,
+        output_directory / INTERACTION_FILENAME,
+        output_directory / SUMMARY_FILENAME,
+        evaluation_directory / ATTRIBUTE_CANDIDATES_FILENAME,
+        evaluation_directory / INTERACTION_DETAILS_FILENAME,
+    ]
+    missing_outputs = [
+        str(path)
+        for path in expected_paths
+        if not path.is_file() or path.stat().st_size == 0
+    ]
+    if missing_outputs:
+        raise OSError(
+            "Gold construction did not write every required output: "
+            + ", ".join(missing_outputs)
+        )
 
 
 ###############################################################################
@@ -1785,11 +2367,16 @@ def main() -> None:
 
     linked = build_linked_records(silver, mapping)
     record_links = build_record_links(linked)
-    identity_profiles, provenance = build_identity_profiles(
+    (
+        identity_profiles,
+        provenance,
+        attribute_candidates,
+    ) = build_identity_profiles(
         linked,
         clusters,
     )
     interactions = build_interaction_summary(linked, clusters)
+    interaction_details = build_interaction_details(linked)
     master = build_master_records(identity_profiles, interactions)
     validate_outputs(
         linked,
@@ -1797,7 +2384,9 @@ def main() -> None:
         master,
         record_links,
         provenance,
+        attribute_candidates,
         interactions,
+        interaction_details,
     )
     summary = build_golden_summary(
         silver,
@@ -1806,14 +2395,18 @@ def main() -> None:
         master,
         record_links,
         provenance,
+        attribute_candidates,
         interactions,
+        interaction_details,
     )
     write_outputs(
         arguments.output_dir,
         master,
         record_links,
         provenance,
+        attribute_candidates,
         interactions,
+        interaction_details,
         summary,
     )
 
@@ -1822,6 +2415,13 @@ def main() -> None:
     print(f"Record mapping: {arguments.record_mapping.resolve()}")
     print(f"Cluster summary: {arguments.cluster_summary.resolve()}")
     print(f"Output directory: {arguments.output_dir.resolve()}")
+    evaluation_directory = (
+        arguments.output_dir / EVALUATION_DIRECTORY_NAME
+    )
+    print(
+        "Gold evaluation directory: "
+        f"{evaluation_directory.resolve()}"
+    )
     print(f"Input records: {len(silver):,}")
     print(f"Records linked to UCRs: {len(record_links):,}")
     print(f"Anonymous records excluded: {mapping['ucr_id'].eq('').sum():,}")
@@ -1831,6 +2431,8 @@ def main() -> None:
         f"{master['resolution_status'].eq('unresolved_singleton').sum():,}"
     )
     print(f"Attribute provenance rows: {len(provenance):,}")
+    print(f"Attribute candidate rows: {len(attribute_candidates):,}")
+    print(f"Interaction detail rows: {len(interaction_details):,}")
 
 
 if __name__ == "__main__":

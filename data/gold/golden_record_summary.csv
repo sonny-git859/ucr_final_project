@@ -14,6 +14,13 @@ interaction_summary_rows,10650
 unresolved_singleton_profiles_retained,1218
 anonymous_records_excluded,21781
 ,
+GOLD EVALUATION SUPPORT,
+attribute_candidate_rows,251731
+alternative_attribute_candidate_rows,21917
+profiles_with_attribute_alternatives,8043
+interaction_detail_rows,56521
+event_linked_interaction_rows,13302
+,
 ASSIGNED RECORDS BY SOURCE,
 crm_assigned_records,8000
 ecommerce_assigned_records,13302
@@ -39,6 +46,8 @@ OUTPUT VALIDATION,
 one_master_record_per_ucr,True
 all_assigned_records_linked,True
 all_master_attributes_have_provenance,True
+attribute_candidates_reconcile,True
 name_bundles_are_coherent,True
 address_bundles_are_coherent,True
 interaction_counts_reconcile,True
+interaction_details_reconcile,True
