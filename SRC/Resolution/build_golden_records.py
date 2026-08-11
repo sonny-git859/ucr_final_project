@@ -5,10 +5,6 @@
 #
 # Anonymous records are excluded because they do not have a final UCR ID.
 # Protected ground truth and evaluation outputs are never accessed.
-#
-###############################################################################
-# Imports
-###############################################################################
 
 from __future__ import annotations
 
