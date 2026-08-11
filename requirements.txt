@@ -1,0 +1,7 @@
+# Direct dependencies for the UCR pipeline and Streamlit application.
+Faker>=37.0,<40.0
+graphviz>=0.19,<1.0
+numpy>=2.0,<3.0
+pandas>=2.2,<4.0
+RapidFuzz>=3.14,<4.0
+streamlit>=1.50,<2.0
