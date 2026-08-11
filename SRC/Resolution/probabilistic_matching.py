@@ -1,4 +1,3 @@
-
 # This script is the second stage of identity resolution for the Universal
 # Customer Record (UCR) project. It uses blocking to generate plausible
 # candidate cluster pairs, applies transparent weighted fuzzy comparisons and
