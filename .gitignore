@@ -27,3 +27,28 @@ data/raw/*.csv
 # Retain empty data folders
 !data/canonical/.gitkeep
 !data/raw/.gitkeep
+
+# Python testing and analysis cache
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local Streamlit secrets
+.streamlit/secrets.toml
+
+# Generated intermediate datasets
+data/events/*.csv
+data/bronze/**/*.csv
+data/silver/**/*.csv
+data/consolidated_silver/*.csv
+data/reference/*.csv
+
+# Generated identity-resolution outputs
+identity_resolution/**/*.csv
+
+# Gold outputs are intentionally retained for the Streamlit SCV.
+# Do not ignore data/gold/.
+
+# Evaluation documentation remains version controlled.
+# Do not ignore docs/evaluation/.

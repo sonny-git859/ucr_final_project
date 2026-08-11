@@ -131,6 +131,15 @@ GOLDEN_RECORD_STAGE = WorkflowStage(
         Path("data") / "gold" / "ucr_attribute_provenance.csv",
         Path("data") / "gold" / "ucr_interaction_summary.csv",
         Path("data") / "gold" / "golden_record_summary.csv",
+        Path("data") / "gold" / "golden_record_summary.csv",
+        Path("data")
+        / "gold"
+        / "evaluation"
+        / "ucr_attribute_candidates.csv",
+        Path("data")
+        / "gold"
+        / "evaluation"
+        / "ucr_interaction_details.csv",
     ),
 )
 
