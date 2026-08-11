@@ -3137,6 +3137,15 @@ def validate_ecommerce_records(
     # Ticket type behaviour by age
     ###########################################################################
 
+    age_60_plus_seated_percentage = age_ticket_summary.loc[
+        "60+",
+        "seated_percentage",
+    ]
+    age_under_60_seated_percentage = age_ticket_summary.loc[
+        "Under 60",
+        "seated_percentage",
+    ]
+
     age_ticket_validation = pd.DataFrame(
         {
             "metric": [
@@ -3173,10 +3182,7 @@ def validate_ecommerce_records(
                     ]
                 ),
                 (
-                    f"{age_ticket_summary.loc[
-                        '60+',
-                        'seated_percentage'
-                    ]:.2f}%"
+                    f"{age_60_plus_seated_percentage:.2f}%",
                 ),
                 int(
                     age_ticket_summary.loc[
@@ -3197,10 +3203,7 @@ def validate_ecommerce_records(
                     ]
                 ),
                 (
-                    f"{age_ticket_summary.loc[
-                        'Under 60',
-                        'seated_percentage'
-                    ]:.2f}%"
+                    f"{age_under_60_seated_percentage:.2f}%"
                 ),
             ],
         }
